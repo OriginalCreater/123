@@ -118,7 +118,7 @@ def scan_file_affel(path, token):
     """Создание списков для необходимых данных"""
     stolb_name = []
     string_range = []
-
+    stolb_num = []
 
     def scan_stolb_for_inn():
         """Поиск столбца с ИНН"""
@@ -139,7 +139,7 @@ def scan_file_affel(path, token):
                 """Создание столца для результатов проверки"""
                 name_rezault_stolb = str(cpi[number_stolb + 1])
 
-                stolb_name.append(name_rezault_stolb)
+                stolb_num.append(name_rezault_stolb)
                 rezault = str(book[f'{name_rezault_stolb}1'].value)
                 if rezault == "Номер":
                     pass
@@ -159,7 +159,7 @@ def scan_file_affel(path, token):
     max_range = int(string_range[0])
     """Сохранение положения столбца с ИНН"""
     inn_stolb = str(stolb_name[0])
-    num_stolb = str(stolb_name[1])
+    num_stolb = str(stolb_num[0])
     inn_list = []
     for i in reversed(range(2, max_range)):
         # inn = str(book[f'{inn_stolb}{i}'].value)
