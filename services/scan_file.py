@@ -214,7 +214,7 @@ def scan_file_affel(path, token):
                     book.insert_rows(i + 1)
                     wb.save(path)
                     book[f'{inn_stolb}{i + 1}'] = f"{a[pos]}"
-                    book[f'{num_stolb}{i + 1}'] = f"{num_list[s]}"
+                    book[f'{num_stolb}{i + 1}'] = f"{int(num_list[s])}"
                     pos += 1
                     wb.save(path)
                 else:
