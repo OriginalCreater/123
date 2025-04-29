@@ -141,22 +141,15 @@ def scan_file_affel(path, token):
 
                 stolb_name.append(name_rezault_stolb)
                 rezault = str(book[f'{name_rezault_stolb}1'].value)
-                wb.save(path)
                 if rezault == "Номер":
                     pass
                 elif rezault == "None":
                     """Если столбец пуст rename его в 'Результат проверки'"""
                     book[f'{name_rezault_stolb}1'] = f"Номер"
-                    string_rezault = 1
-                    string_range.append(string_rezault)
-                    wb.save(path)
                 else:
                     """Если чтото иное, создание нового столбца для результатов"""
-                    book.insert_cols(number_stolb + 2, 1)
+                    book.insert_cols(number_stolb + 2, 2)
                     book[f'{name_rezault_stolb}1'] = f"Номер"
-                    string_rezault = 1
-                    string_range.append(string_rezault)
-                    wb.save(path)
 
     """Начало сканирования фаила на длинну и положение"""
     scan_stolb_for_inn()
@@ -181,15 +174,17 @@ def scan_file_affel(path, token):
         max_inn3 = str(book[f'{inn_stolb}{i + 2}'].value)
         max_inn4 = str(book[f'{inn_stolb}{i + 3}'].value)
         max_inn5 = str(book[f'{inn_stolb}{i + 4}'].value)
-        if max_inn2 == "None" and max_inn3 == "None" and max_inn4 == "None" and max_inn5 == "None":
+        if max_inn == "None" and max_inn2 == "None" and max_inn3 == "None" and max_inn4 == "None" and max_inn5 == "None":
             max_range_true.append(i)
             break
     max = max_range_true[0]
     print(max_range_true[0])
     list_info = []
-    for i in range(1, int(max)):
+    for i in range(1, max):
         inn = str(book[f'{inn_stolb}{i}'].value)
         if inn == f"----------":
+            pass
+        elif inn == "ИНН" or inn == "Инн" or inn == "инн":
             pass
         else:
             list_info.append(inn)
@@ -197,21 +192,25 @@ def scan_file_affel(path, token):
         for row_index in range(1, book.max_row + 1):  # Начинаем с 1 (первая строка)
             for col_index in range(1, book.max_column + 1):
                 cell_value = book.cell(row=row_index, column=col_index).value
-                if cell_value == inn:  # Сравниваем с искомым значением
+                if cell_value == int(inn):  # Сравниваем с искомым значением
                     return row_index  # Возвращаем номер строки
     for i in list_info:
-        wb.save(path)
-        inn = i.split('.')
-        inn = inn[0]
-        row_index = index_search(inn)
-        inn = str(book[f'{inn_stolb}{row_index}'].value)
-        inn_list, num_list = one_affel_check(inn, token, row_index)
+        print(list_info)
+        row_index_1 = index_search(i)
+        print(i)
+        row_index_1 = str(row_index_1)
+        inn = row_index_1.split('.')
+        row_index_1 = inn[0]
+
+        print(row_index_1)
+        inn = str(book[f'{inn_stolb}{row_index_1}'].value)
+        inn_list, num_list = one_affel_check(inn, token, row_index_1)
         pos = 0
         for s, a in enumerate(inn_list):
             if a == []:
                 pass
             else:
-                for i in range(row_index, row_index + len(a)):
+                for i in range(row_index_1, row_index_1 + len(a)):
                     book.insert_rows(i + 1)
                     wb.save(path)
                     book[f'{inn_stolb}{i + 1}'] = f"{a[pos]}"
