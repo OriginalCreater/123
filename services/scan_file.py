@@ -146,10 +146,14 @@ def scan_file_affel(path, token):
                 elif rezault == "None":
                     """Если столбец пуст rename его в 'Результат проверки'"""
                     book[f'{name_rezault_stolb}1'] = f"Номер"
+                    string_rezault = 2
+                    string_range.append(string_rezault)
                 else:
                     """Если чтото иное, создание нового столбца для результатов"""
                     book.insert_cols(number_stolb + 2, 2)
                     book[f'{name_rezault_stolb}1'] = f"Номер"
+                    string_rezault = 2
+                    string_range.append(string_rezault)
 
     """Начало сканирования фаила на длинну и положение"""
     scan_stolb_for_inn()
@@ -192,7 +196,7 @@ def scan_file_affel(path, token):
         for row_index in range(1, book.max_row + 1):  # Начинаем с 1 (первая строка)
             for col_index in range(1, book.max_column + 1):
                 cell_value = book.cell(row=row_index, column=col_index).value
-                if cell_value == int(inn):  # Сравниваем с искомым значением
+                if cell_value == int(inn) or cell_value == str(inn):  # Сравниваем с искомым значением
                     return row_index  # Возвращаем номер строки
     for i in list_info:
         print(list_info)
@@ -200,7 +204,7 @@ def scan_file_affel(path, token):
         print(i)
         row_index_1 = str(row_index_1)
         inn = row_index_1.split('.')
-        row_index_1 = inn[0]
+        row_index_1 = int(inn[0])
 
         print(row_index_1)
         inn = str(book[f'{inn_stolb}{row_index_1}'].value)
@@ -214,7 +218,7 @@ def scan_file_affel(path, token):
                     book.insert_rows(i + 1)
                     wb.save(path)
                     book[f'{inn_stolb}{i + 1}'] = f"{a[pos]}"
-                    book[f'{num_stolb}{i + 1}'] = f"{int(num_list[s])}"
+                    book[f'{num_stolb}{i + 1}'] = f"{num_list[s]}"
                     pos += 1
                     wb.save(path)
                 else:
