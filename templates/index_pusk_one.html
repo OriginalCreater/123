@@ -1,0 +1,90 @@
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="ru">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Единичная проверка</title>-->
+<!--</head>-->
+<!--<body style="-->
+<!--background-color:rgb(0, 103, 176);-->
+<!--text-align:center;-->
+<!--margin-top: 280px;-->
+<!--color:white;">-->
+<!--&lt;!&ndash;<meta http-equiv="refresh" content="0; url='login'" />&ndash;&gt;-->
+<!--    <form action="/upload_one" method="post">-->
+<!--        <info>-->
+<!--            <label for="inn">Введите ИНН:</label>-->
+<!--            <input type="text" id="inn" name="inn" required><br><br>-->
+<!--        </info>-->
+<!--        <button type="submit">Проверить</button>-->
+<!--    </form>-->
+<!--</body>-->
+<!--</html>-->
+<!--<!DOCTYPE html>-->
+<!--<html lang="ru">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Единичная проверка</title>-->
+<!--</head>-->
+<!--<body style="-->
+<!--background-color:rgb(0, 103, 176);-->
+<!--text-align:center;-->
+<!--margin-top: 280px;-->
+<!--color:white;">-->
+<!--    <form action="/pusk_one" method="post">  &lt;!&ndash; Изменили action на "/" &ndash;&gt;-->
+<!--        <info>-->
+<!--            <label for="inn">Введите ИНН:</label>-->
+<!--            <input type="text" id="inn" name="inn" required><br><br>-->
+<!--        </info>-->
+<!--        <button type="submit">Проверить</button>-->
+<!--    </form>-->
+<!--    <p id="result-message"></p>-->
+
+<!--    <script>-->
+<!--        const resultMessage = document.getElementById('result-message');-->
+
+<!--        {% if result is defined %}-->
+<!--            {% if result == True %}-->
+<!--                resultMessage.textContent = "Свободен";-->
+<!--                resultMessage.style.color = "green";-->
+<!--            {% elif result == False %}-->
+<!--                resultMessage.textContent = "Занят";-->
+<!--                resultMessage.style.color = "red";-->
+<!--            {% endif %}-->
+<!--        {% endif %}-->
+<!--    </script>-->
+
+<!--</body>-->
+<!--</html>-->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Единичная проверка</title>
+</head>
+<body style="
+background-color:rgb(0, 103, 176);
+text-align:center;
+margin-top: 280px;
+color:white;">
+    <form action="/pusk_one" method="post">
+        <info>
+            <label for="inn">Введите ИНН:</label>
+            <input type="text" id="inn" name="inn" required><br><br>
+        </info>
+        <button type="submit">Проверить</button>
+    </form>
+
+    <p id="result-message"></p>
+
+    <script>
+        const resultMessage = document.getElementById('result-message');
+
+        {% if message is defined %}
+            resultMessage.textContent = "{{ message }}";
+            resultMessage.style.color = "{% if result %} green {% else %} red {% endif %}";
+        {% endif %}
+    </script>
+
+</body>
+</html>
