@@ -52,6 +52,7 @@ def handle_login():
     username = request.form.get('username')
     password = request.form.get('password')
     response_data = refresh_token(username, password)
+    # print(response_data)
     access_token = request.cookies.get('token')
     if response_data["token"]:
         info['token'] = response_data['token']
@@ -197,10 +198,43 @@ def affel_search():
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     uploaded_file.save(file_path)
     return redirect("/scan_html_affel")
+@app.route("/upload_affel_pusk", methods = ['POST'])
+def upload_affel_pusk():
+    files = request.files.getlist("file")
+    uploaded_files = request.files.getlist("file")
+    uploaded_file = uploaded_files[0]
+    filename = uploaded_file.filename
+    name.append(filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    uploaded_file.save(file_path)
+    return redirect("/scan_html_affel_pusk")
+@app.route("/scan_html_affel_pusk", methods=["GET",'POST'])
+def scan_html_affel_pusk():
+    return render_template("index_scan_affel_pusk.html")
+# @app.route("/scan_html_affel", methods=["GET",'POST'])
+# def scan_html_affel():
+#     return render_template("index_scan_affel.html")
+
+@app.route("/pusk_affel", methods = ["GET",'POST'])
+def pusk_affel():
+    return render_template('pusk_affel_index.html')
 @app.route("/scan_html_affel", methods=["GET",'POST'])
 def scan_html_affel():
     return render_template("index_scan_affel.html")
-
+@app.route('/scan_affel_pusk', methods=['GET'])
+def scan_affel_pusk():
+    if request.method == "GET":
+        filename = name[-1]
+        path = fr"{UPLOAD_FOLDER}/{filename}"
+        token = info['token']
+        affel = scan_file_affel(path, token)
+        list_inn, pos_resault, pos_reason = scan_file(path)
+        token = info['token']
+        check_companies(list_inn, pos_resault, pos_reason, path, token)
+        # check_companies(list_inn, pos_resault, pos_reason, path, token)
+        # return jsonify(list_inn)
+        # return redirect("/uploaded_html")
+        return(redirect("/uploaded_html"))
 @app.route('/scan_affel', methods=['GET'])
 def scan_affel():
     if request.method == "GET":
@@ -208,11 +242,13 @@ def scan_affel():
         path = fr"{UPLOAD_FOLDER}/{filename}"
         token = info['token']
         list_inn = scan_file_affel(path, token)
+
         # check_companies(list_inn, pos_resault, pos_reason, path, token)
         # return jsonify(list_inn)
         # return redirect("/uploaded_html")
         return(redirect("/uploaded_html"))
 if __name__ == '__main__':
+    print("ok")
     app.run(debug=True, host="0.0.0.0", port=5000)
 # @app.route('/get_token', methods=['POST'])
 # def get_token(): # обновление токена по коду с смс

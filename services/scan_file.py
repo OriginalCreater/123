@@ -2,7 +2,7 @@ import os
 # import time
 from openpyxl import load_workbook, utils
 from tkinter import filedialog as fd
-from modules.search_pusk import one_affel_check
+from modules.search_pusk import one_affel_check, one_affel_email, one_affel_site, one_affel_name
 # def path_file():
 #     return fd.askopenfilename()
 
@@ -96,7 +96,6 @@ def scan_file(path):
         inn = inn.split('.')
         inn = inn[0]
         print(inn)
-
         inn_list.append(inn)
     return inn_list, rezault_stolb, reason_stolb
 
@@ -138,20 +137,19 @@ def scan_file_affel(path, token):
                         break
                 """Создание столца для результатов проверки"""
                 name_rezault_stolb = str(cpi[number_stolb + 1])
-
                 stolb_num.append(name_rezault_stolb)
                 rezault = str(book[f'{name_rezault_stolb}1'].value)
-                if rezault == "Номер":
+                if rezault == "Инфо":
                     pass
                 elif rezault == "None":
                     """Если столбец пуст rename его в 'Результат проверки'"""
-                    book[f'{name_rezault_stolb}1'] = f"Номер"
+                    book[f'{name_rezault_stolb}1'] = f"Инфо"
                     string_rezault = 2
                     string_range.append(string_rezault)
                 else:
                     """Если чтото иное, создание нового столбца для результатов"""
                     book.insert_cols(number_stolb + 2, 2)
-                    book[f'{name_rezault_stolb}1'] = f"Номер"
+                    book[f'{name_rezault_stolb}1'] = f"Инфо"
                     string_rezault = 2
                     string_range.append(string_rezault)
 
@@ -199,16 +197,21 @@ def scan_file_affel(path, token):
                 if cell_value == int(inn) or cell_value == str(inn):  # Сравниваем с искомым значением
                     return row_index  # Возвращаем номер строки
     for i in list_info:
-        print(list_info)
+        # print(list_info)
         row_index_1 = index_search(i)
         print(i)
         row_index_1 = str(row_index_1)
         inn = row_index_1.split('.')
         row_index_1 = int(inn[0])
 
-        print(row_index_1)
+        # print(row_index_1)
         inn = str(book[f'{inn_stolb}{row_index_1}'].value)
         inn_list, num_list = one_affel_check(inn, token, row_index_1)
+        # print(inn_list,num_list)
+        inn_list_two, email_list = one_affel_email(inn, token, row_index_1)
+        inn_list_tree, site_list = one_affel_site(inn, token, row_index_1)
+        inn_list_four, name_list = one_affel_name(inn, token, row_index_1)
+        # print(inn_list_two, email_list)
         pos = 0
         for s, a in enumerate(inn_list):
             if a == []:
@@ -223,8 +226,51 @@ def scan_file_affel(path, token):
                     wb.save(path)
                 else:
                     pos = 0
-
+        pos = 0
+        for d, a in enumerate(inn_list_two):
+            if a == []:
+                pass
+            else:
+                for i in range(row_index_1, row_index_1 + len(a)):
+                    book.insert_rows(i + 1)
+                    wb.save(path)
+                    book[f'{inn_stolb}{i + 1}'] = f"{a[pos]}"
+                    book[f'{num_stolb}{i + 1}'] = f"{email_list[d]}"
+                    wb.save(path)
+                    pos += 1
+                    wb.save(path)
+                else:
+                    pos = 0
+        pos = 0
+        for d, a in enumerate(inn_list_tree):
+            if a == []:
+                pass
+            else:
+                for i in range(row_index_1, row_index_1 + len(a)):
+                    book.insert_rows(i + 1)
+                    wb.save(path)
+                    book[f'{inn_stolb}{i + 1}'] = f"{a[pos]}"
+                    book[f'{num_stolb}{i + 1}'] = f"{site_list[d]}"
+                    wb.save(path)
+                    pos += 1
+                    wb.save(path)
+                else:
+                    pos = 0
+        for s, a in enumerate(inn_list_four):
+            if a == []:
+                pass
+            else:
+                for i in range(row_index_1, row_index_1 + len(a)):
+                    book.insert_rows(i + 1)
+                    wb.save(path)
+                    book[f'{inn_stolb}{i + 1}'] = f"{a[pos]}"
+                    book[f'{num_stolb}{i + 1}'] = f"{name_list[s]}"
+                    pos += 1
+                    wb.save(path)
+                else:
+                    pos = 0
     return inn_list
+
 
 
 # print(scan_file("C:\\Users\\evgeniy\\Desktop\\alve\\uploads\\1213425 (4) (2) (2).xlsx"))

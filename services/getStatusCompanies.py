@@ -30,6 +30,107 @@ def get_number_affel(id : str, token : str) -> list :
         return number
     else:
         return None
+
+def get_mail_affel(id : str, token : str) -> list :
+    url = "https://gateway.cdek.ru/contragent/web/contragent/getOne"
+
+    payload = json.dumps({
+    "filter": {
+        "uuid": f"{id}"
+    }
+    })
+    headers = {
+    'X-Auth-Token': f'{token}',
+    'Origin': 'https://contragentng.cdek.ru',
+    'Referer': 'https://contragentng.cdek.ru/',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-site',
+    'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    if response.json()['emails'] == []:
+        return None
+    else:
+        mail = response.json()['email']
+    if mail != []:
+    #     code = mail[0]["phoneCode"]
+    #     num = mail[0]["number"]
+    #     number = f"{str(code)}{str(num)}"
+        return mail
+    else:
+        return None
+
+def get_name_affel(id : str, token : str) -> list :
+    url = "https://gateway.cdek.ru/contragent/web/contragent/getOne"
+
+    payload = json.dumps({
+    "filter": {
+        "uuid": f"{id}"
+    }
+    })
+    headers = {
+    'X-Auth-Token': f'{token}',
+    'Origin': 'https://contragentng.cdek.ru',
+    'Referer': 'https://contragentng.cdek.ru/',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-site',
+    'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    if response.json()['contacts'] == []:
+        return None
+    else:
+        contacts = response.json()['contacts']
+        name = contacts[0]["name"]
+        list_name = name.split(" ")
+        if len(list_name) >= 3:
+            return name
+        else:
+            return None
+    #     name = response.json()['contacts']
+    #     name = name["name"]
+    # if name != []:
+    #     code = mail[0]["phoneCode"]
+    #     num = mail[0]["number"]
+    #     number = f"{str(code)}{str(num)}"
+
+    #     return contacts
+def get_site_affel(id : str, token : str) -> list :
+    url = "https://gateway.cdek.ru/contragent/web/contragent/getOne"
+
+    payload = json.dumps({
+    "filter": {
+        "uuid": f"{id}"
+    }
+    })
+    headers = {
+    'X-Auth-Token': f'{token}',
+    'Origin': 'https://contragentng.cdek.ru',
+    'Referer': 'https://contragentng.cdek.ru/',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-site',
+    'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    if response.json()['site'] == "":
+        return None
+    else:
+        site = response.json()['site']
+        return site
+    # if site != []:
+    # #     code = mail[0]["phoneCode"]
+    # #     num = mail[0]["number"]
+    # #     number = f"{str(code)}{str(num)}"
+    #
+    # else:
+    #     return None
 def getStatusCompanies(id : str, token : str) -> list :
     url = "https://gateway.cdek.ru/contragent/web/contragent/getOne"
 
