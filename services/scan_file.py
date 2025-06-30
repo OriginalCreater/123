@@ -45,12 +45,13 @@ def scan_file(path):
                 """Создание столца для результатов проверки"""
                 name_rezault_stolb = str(cpi[number_stolb + 1])
                 name_reason = str(cpi[number_stolb + 2])
-
+                wb.save(path)
 
                 stolb_name.append(name_rezault_stolb)
                 stolb_name.append(name_reason)
                 rezault = str(book[f'{name_rezault_stolb}1'].value)
-                if rezault == "Результат проверки":
+                print(f"Жма {rezault}")
+                if rezault == "Результат (ПУСК)":
                     """Если найден столбез с резултатами поиск его длинны"""
                     for string_rezault in range(1, 1000):
                         """Поиск длинны колличества результатов для оценки минимального значения"""
@@ -60,15 +61,16 @@ def scan_file(path):
                             string_range.append(string_rezault)
                             break
                 elif rezault == "None":
-                    """Если столбец пуст rename его в 'Результат проверки'"""
-                    book[f'{name_rezault_stolb}1'] = f"Результат проверки"
+                    """Если столбец пуст rename его в 'Результат (ПУСК)'"""
+                    book[f'{name_rezault_stolb}1'] = f"Результат (ПУСК)"
                     string_rezault = 2
                     string_range.append(string_rezault)
                 else:
                     """Если чтото иное, создание нового столбца для результатов"""
-                    book.insert_cols(number_stolb + 2, 1)
-                    book[f'{name_rezault_stolb}1'] = f"Результат проверки"
-                    book[f'{name_reason}1'] = f"Причина"
+                    book.insert_cols(number_stolb + 2, 2)
+                    wb.save(path)
+                    book[f'{name_rezault_stolb}1'] = f"Результат (ПУСК)"
+                    book[f'{name_reason}1'] = f"Причина (ПУСК)"
                     string_rezault = 2
                     string_range.append(string_rezault)
 
@@ -136,20 +138,23 @@ def scan_file_affel(path, token):
                         wb.save(path)
                         break
                 """Создание столца для результатов проверки"""
-                name_rezault_stolb = str(cpi[number_stolb + 1])
-                stolb_num.append(name_rezault_stolb)
-                rezault = str(book[f'{name_rezault_stolb}1'].value)
-                if rezault == "Инфо":
+                name_info_stolb = str(cpi[number_stolb+1])
+                wb.save(path)
+                stolb_num.append(name_info_stolb)
+                rezault = str(book[f'{name_info_stolb}1'].value)
+                print(rezault)
+                if rezault == "Данные по аффилировке":
                     pass
                 elif rezault == "None":
                     """Если столбец пуст rename его в 'Результат проверки'"""
-                    book[f'{name_rezault_stolb}1'] = f"Инфо"
+                    book[f'{name_info_stolb}1'] = f"Данные по аффилировке"
                     string_rezault = 2
                     string_range.append(string_rezault)
                 else:
                     """Если чтото иное, создание нового столбца для результатов"""
-                    book.insert_cols(number_stolb + 2, 2)
-                    book[f'{name_rezault_stolb}1'] = f"Инфо"
+                    book.insert_cols(number_stolb + 2, 1)
+                    wb.save(path)
+                    book[f'{name_info_stolb}1'] = f"Данные по аффилировке"
                     string_rezault = 2
                     string_range.append(string_rezault)
 

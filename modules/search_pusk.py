@@ -12,7 +12,8 @@ def check_companies(list_inn, pos_resault,pos_reason, path, token):
     results_uuid = []
     results_inn = []
     for string, inn in enumerate(list_inn):
-
+        if inn == "----------":
+            continue
         # print(f"=============={inn}======ххх=========")
         if not inn:
             return jsonify({"error": "Missing 'inn' parameter"}), 400
@@ -228,8 +229,6 @@ def one_affel_name(inn, token, pos):
             pass
         else:
             main_info_inn.append(list_inn)
-    print(main_info_name)
-    print(main_info_inn)
     return main_info_inn, main_info_name
 
 

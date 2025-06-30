@@ -36,7 +36,6 @@ def getOrderDetail(contragentUuid, token : str):
     orderDetail = response.json()['ordersDetail']
     for order in orderDetail:
         date = order['deliveryDate']
-        print(date)
     # если нет отчёта менеджера по продажам возвращаем False
     # if omp == []:
     #     return False
