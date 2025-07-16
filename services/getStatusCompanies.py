@@ -50,6 +50,7 @@ def get_mail_affel(id : str, token : str) -> list :
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
+
     if response.json()['emails'] == []:
         return None
     else:
@@ -61,6 +62,7 @@ def get_mail_affel(id : str, token : str) -> list :
         return mail
     else:
         return None
+
 
 def get_name_affel(id : str, token : str) -> list :
     url = "https://gateway.cdek.ru/contragent/web/contragent/getOne"

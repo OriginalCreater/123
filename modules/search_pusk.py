@@ -109,7 +109,10 @@ def one_affel_check(inn, token, pos):
             main_info_num.append(i)
             list_inn = get_id_affel(str(i), token)
             li_i = [i for n, i in enumerate(list_inn) if i not in list_inn[:n]]
-            li_i.remove(str(inn))
+            try:
+                li_i.remove(str(inn))
+            except ValueError:
+                pass
             for i in li_i:
                 if i == "":
                     li_i.remove("")

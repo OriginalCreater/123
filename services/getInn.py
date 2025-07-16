@@ -1,3 +1,5 @@
+import time
+
 import requests
 import json
 
@@ -39,6 +41,7 @@ def get_id_affel(phone : str, token : str) -> [str] :
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
+    print(response.text)
     inn = [item['inn'] for item in response.json()['items']]
     return inn
 
@@ -156,7 +159,7 @@ def get_id_affel_name(name : str, token : str) -> [str] :
     response = requests.request("POST", url, headers=headers, data=payload)
     inn = [item['inn'] for item in response.json()['items']]
     return inn
-def get_id_companies(inn : int, token : str) -> [str] : 
+def get_id_companies(inn : int, token : str) -> [str] :
     url = "https://gateway.cdek.ru/contragent/web/contragent/search/byFilters"
 
     payload = json.dumps({
@@ -198,5 +201,6 @@ def get_id_companies(inn : int, token : str) -> [str] :
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
+    print(response.text)
     uuids = [item['uuid'] for item in response.json()['items']]
     return uuids

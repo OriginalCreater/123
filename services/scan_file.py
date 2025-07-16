@@ -232,6 +232,7 @@ def scan_file_affel(path, token):
                 else:
                     pos = 0
         pos = 0
+        print(inn_list_two, "\n", email_list)
         for d, a in enumerate(inn_list_two):
             if a == []:
                 pass
@@ -239,8 +240,12 @@ def scan_file_affel(path, token):
                 for i in range(row_index_1, row_index_1 + len(a)):
                     book.insert_rows(i + 1)
                     wb.save(path)
+
                     book[f'{inn_stolb}{i + 1}'] = f"{a[pos]}"
-                    book[f'{num_stolb}{i + 1}'] = f"{email_list[d]}"
+                    try:
+                        book[f'{num_stolb}{i + 1}'] = f"{email_list[d]}"
+                    except IndexError:
+                        book[f'{num_stolb}{i + 1}'] = f"{email_list[-1]}"
                     wb.save(path)
                     pos += 1
                     wb.save(path)
