@@ -6,7 +6,7 @@ from services.getDynamic import getDinamic
 from services.getSecondaryFilterData import getOMP
 from modules.search_pusk import check_companies,one_inn_check
 from flask import Flask, jsonify, render_template, request, current_app, send_from_directory, redirect, url_for, make_response, send_file
-from services.scan_file import scan_file, scan_file_affel
+from services.scan_file import scan_file, scan_file_affel, duble_opti
 import os
 import pandas as pd
 from localStoragePy import localStoragePy
@@ -227,7 +227,9 @@ def scan_affel_pusk():
         filename = name[-1]
         path = fr"{UPLOAD_FOLDER}/{filename}"
         token = info['token']
+        duble_opti(path)
         affel = scan_file_affel(path, token)
+        duble_opti(path)
         list_inn, pos_resault, pos_reason = scan_file(path)
         token = info['token']
         check_companies(list_inn, pos_resault, pos_reason, path, token)

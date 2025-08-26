@@ -88,8 +88,21 @@ def one_inn_check(inn,token):
             value, reason, result = results_inn[-1]["inn"], "Не выявлено", True
     return value, reason, result
 
-def one_affel_check(inn, token, pos):
+def one_affel_check(inn, token, pos, phone):
     print(inn)
+    print(f"Телефоны - {phone}")
+    """Удаление лишнего из номеров ексель"""
+    ch = ['-', '(', ' ', ")"]
+
+    for i in ch:
+        phone = phone.replace(i, "")
+
+    print(phone)
+    """Разделение номеров ексель на елименты списка"""
+    info_phone = phone.split(',')
+    print(info_phone)
+    """Берем елимент списка и получаем длинну строки если = 12 ок если 11 меняем первый спимвол на +7 иначе удаляем 
+    номер"""
     list_uuid = get_id_companies(inn, token)
     time.sleep(2)
     number_list = []
@@ -108,15 +121,20 @@ def one_affel_check(inn, token, pos):
         for i in li:
             main_info_num.append(i)
             list_inn = get_id_affel(str(i), token)
-            li_i = [i for n, i in enumerate(list_inn) if i not in list_inn[:n]]
-            try:
-                li_i.remove(str(inn))
-            except ValueError:
-                pass
-            for i in li_i:
-                if i == "":
-                    li_i.remove("")
-            main_info_inn.append(li_i)
+            if len(list_inn) >= 10:
+                main_info_inn = False
+                main_info_num = False
+                return main_info_inn, main_info_num
+            else:
+                li_i = [i for n, i in enumerate(list_inn) if i not in list_inn[:n]]
+                try:
+                    li_i.remove(str(inn))
+                except ValueError:
+                    pass
+                for i in li_i:
+                    if i == "":
+                        li_i.remove("")
+                main_info_inn.append(li_i)
     # print(main_info_inn)
     # print(main_info_num)
     return main_info_inn, main_info_num
