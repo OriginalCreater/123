@@ -6,7 +6,7 @@ from services.getDynamic import getDinamic
 from services.getSecondaryFilterData import getOMP
 from modules.search_pusk import check_companies,one_inn_check
 from flask import Flask, jsonify, render_template, request, current_app, send_from_directory, redirect, url_for, make_response, send_file
-from services.scan_file import scan_file, scan_file_affel, duble_opti
+from services.scan_file import scan_file, scan_file_affel, duble_opti, scan_file_docs
 import os
 import pandas as pd
 from localStoragePy import localStoragePy
@@ -36,6 +36,9 @@ def wh():
 @app.route('/affel')
 def affel():
     return render_template("affel.html")
+@app.route('/docs')
+def docs():
+    return render_template("docs.html")
 @app.route('/ovk')
 def ovk():
     return render_template('ovk.html')
@@ -198,6 +201,16 @@ def affel_search():
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     uploaded_file.save(file_path)
     return redirect("/scan_html_affel")
+@app.route("/docs_search", methods = ["POST"])
+def docs_search():
+    files = request.files.getlist("file")
+    uploaded_files = request.files.getlist("file")
+    uploaded_file = uploaded_files[0]
+    filename = uploaded_file.filename
+    name.append(filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    uploaded_file.save(file_path)
+    return redirect("/scan_html_docs")
 @app.route("/upload_affel_pusk", methods = ['POST'])
 def upload_affel_pusk():
     files = request.files.getlist("file")
@@ -221,6 +234,9 @@ def pusk_affel():
 @app.route("/scan_html_affel", methods=["GET",'POST'])
 def scan_html_affel():
     return render_template("index_scan_affel.html")
+@app.route("/scan_html_docs", methods=["GET",'POST'])
+def scan_html_docs():
+    return render_template("index_scan_docs.html")
 @app.route('/scan_affel_pusk', methods=['GET'])
 def scan_affel_pusk():
     if request.method == "GET":
@@ -244,6 +260,18 @@ def scan_affel():
         path = fr"{UPLOAD_FOLDER}/{filename}"
         token = info['token']
         list_inn = scan_file_affel(path, token)
+
+        # check_companies(list_inn, pos_resault, pos_reason, path, token)
+        # return jsonify(list_inn)
+        # return redirect("/uploaded_html")
+        return(redirect("/uploaded_html"))
+@app.route('/scan_docs', methods=['GET'])
+def scan_docs():
+    if request.method == "GET":
+        filename = name[-1]
+        path = fr"{UPLOAD_FOLDER}/{filename}"
+        token = info['token']
+        list_docs = scan_file_docs(path, token)
 
         # check_companies(list_inn, pos_resault, pos_reason, path, token)
         # return jsonify(list_inn)

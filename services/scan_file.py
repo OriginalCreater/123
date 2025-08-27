@@ -2,7 +2,7 @@ import os
 # import time
 from openpyxl import load_workbook, utils
 from tkinter import filedialog as fd
-from modules.search_pusk import one_affel_check, one_affel_email, one_affel_site, one_affel_name
+from modules.search_pusk import one_affel_check, one_affel_email, one_affel_site, one_affel_name, search_docs
 # def path_file():
 #     return fd.askopenfilename()
 
@@ -397,5 +397,46 @@ def duble_opti(path):
             wb.save(path)
 
         print(f"\nФинальный результат: {lst}")
-
+def scan_file_docs(path,token):
+    """Получение пути фаила с информацией 'ИНН'"""
+    path = str(path)
+    """Создание екземпляра класса для работы с екселем"""
+    wb = load_workbook(filename=path)
+    """Поиск страници по названию 'Основная'"""
+    try:
+        book = wb["Основная"]
+    except:
+        """rename активного листа в 'Основная'"""
+        book = wb.active
+        book.title = "Основная"
+    """Создание списка с столбцами екселя"""
+    cpi = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+           "W", "X", "Y", "Z"]
+    """Создание списков для необходимых данных"""
+    stolb_doc = []
+    stolb_res = []
+    info_doc_list = []
+    for i, a in enumerate(cpi):
+        docs_stolb = str(book[f'{a}1'].value)
+        if docs_stolb == "Номер договора":
+            stolb_doc.append(a)
+            # name_info_stolb = str(cpi[i + 1])
+            book.insert_cols(i + 2, 1)
+            stolb_res.append(cpi[i+1])
+            book[f'{cpi[i+1]}1'] = f"Период формирования документов"
+            wb.save(path)
+            break
+    docs_stolb = stolb_doc[0]
+    res_stolb  = stolb_res[0]
+    for i in range(2, 1000):
+        docs_str = str(book[f'{docs_stolb}{i}'].value)
+        if docs_str == "None":
+            break
+        else:
+            print(docs_str)
+            resault = search_docs(str(docs_str), str(token))
+            book[f'{res_stolb}{i}'] = f"{resault}"
+            wb.save(path)
+            info_doc_list.append(docs_str)
+    print(info_doc_list)
 # print(scan_file("C:\\Users\\evgeniy\\Desktop\\alve\\uploads\\1213425 (4) (2) (2).xlsx"))

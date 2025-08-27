@@ -7,7 +7,7 @@ from services.getStatusCompanies import getStatusCompanies, checkStatusCompanies
 from services.getDynamic import getDinamic
 from services.getSecondaryFilterData import getOMP
 from services.recResults import record
-
+from services.getDocs import getDoc
 def check_companies(list_inn, pos_resault,pos_reason, path, token):
     results_uuid = []
     results_inn = []
@@ -87,7 +87,16 @@ def one_inn_check(inn,token):
         else:
             value, reason, result = results_inn[-1]["inn"], "Не выявлено", True
     return value, reason, result
-
+def search_docs(number,token):
+    info = getDoc(number, token)
+    if info == "3":
+        res = "Месячный"
+        print(res)
+        return res
+    elif info == "2":
+        res = "Еженедельный"
+        print(res)
+        return res
 def one_affel_check(inn, token, pos, phone):
     print(inn)
     print(f"Телефоны - {phone}")
