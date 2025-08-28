@@ -89,11 +89,11 @@ def one_inn_check(inn,token):
     return value, reason, result
 def search_docs(number,token):
     info = getDoc(number, token)
-    if info == "3":
+    if info == "2":
         res = "Месячный"
         print(res)
         return res
-    elif info == "2":
+    elif info == "3":
         res = "Еженедельный"
         print(res)
         return res
