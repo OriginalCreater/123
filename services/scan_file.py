@@ -3,6 +3,7 @@ import os
 from openpyxl import load_workbook, utils
 from tkinter import filedialog as fd
 from modules.search_pusk import one_affel_check, one_affel_email, one_affel_site, one_affel_name, search_docs
+from services.historydata import historyData
 # def path_file():
 #     return fd.askopenfilename()
 
@@ -397,6 +398,150 @@ def duble_opti(path):
             wb.save(path)
 
         print(f"\nФинальный результат: {lst}")
+def ovk_skan(path,token):
+    path = str(path)
+    """Создание екземпляра класса для работы с екселем"""
+    wb = load_workbook(filename=path)
+    """Поиск страници по названию 'Основная'"""
+    try:
+        book = wb["Sheet1"]
+    except:
+        """rename активного листа в 'Основная'"""
+        book = wb.active
+        book.title = "Sheet1"
+    """Создание списка с столбцами екселя"""
+    cpi = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+           "W", "X", "Y", "Z"]
+    """Создание списков для необходимых данных"""
+    # new_sheet = wb.create_sheet(title="С изменениями")
+    # trues = wb["С изменениями"]
+    # trues[f'A1'] = f"№ заказа"
+    book.insert_cols(1)
+    book[f'A1'] = f"Наличие изменения"
+    # new_sheet = wb.create_sheet(title="Без изменений")
+    # falses = wb["Без изменений"]
+    # falses[f'A1'] = f"№ заказа"
+    # Сохраняем изменения
+    wb.save(path)
+    stolb_ovk_info = []
+    string_ovk_info = []
+    pos_ovk = []
+    for i in cpi:
+        ovk_stolb = str(book[f'{i}1'].value)
+        if ovk_stolb == "№ заказа" or ovk_stolb == "№ заказа":
+            stolb_ovk_info.append(i)
+            break
+    if stolb_ovk_info == []:
+        print("В фаиле насер")
+    else:
+        for i in range(2, 100000):
+            ovk_string = str(book[f'{stolb_ovk_info[0]}{i}'].value)
+            ovk_string1 = str(book[f'{stolb_ovk_info[0]}{i+1}'].value)
+            ovk_string2 = str(book[f'{stolb_ovk_info[0]}{i+2}'].value)
+            ovk_string3 = str(book[f'{stolb_ovk_info[0]}{i+3}'].value)
+            if ovk_string == "None" and ovk_string1 == "None" and ovk_string2 == "None" and ovk_string3 == "None":
+                string_ovk_info.append(i)
+                print(ovk_string)
+                print(i)
+                pos_ovk.append(int(i))
+                break
+    number_ovk = []
+    print(string_ovk_info[0])
+    print(stolb_ovk_info[0])
+    for i in range(2, string_ovk_info[0]):
+        ovk_info = str(book[f'{stolb_ovk_info[0]}{i}'].value)
+        """Формирование чанка заказа"""
+        if number_ovk == []:
+            number_ovk.append(str(ovk_info))
+        else:
+            if ovk_info == number_ovk[-1]:
+                pass
+            else:
+                number_ovk.append(str(ovk_info))
+    # print(number_ovk)
+
+    def chunk_generator(lst, chunk_size=500):
+        for i in range(0, len(lst), chunk_size):
+            yield lst[i:i + chunk_size]
+    number = []
+    atrr = []
+    for i, chunk in enumerate(chunk_generator(number_ovk, 500)):
+        num, atr = historyData(token, chunk)
+        for e in num:
+            number.append(e)
+            p = num.index(e)
+            atrr.append(atr[p])
+    print(number)
+    print(atrr)
+
+    t_p = 1
+    f_p = 1
+    # for i in number_ovk:
+    #     if i in number:
+    #         pos = number.index(i)
+    #         trues[f'A{t_p}'] = f"{i}"
+    #         trues[f'B{t_p}'] = f"{atrr[pos]}"
+    #         t_p += 1
+    #     else:
+    #         falses[f'A{f_p}'] = f"{i}"
+    #         f_p += 1
+    #     wb.save(path)
+    print(pos_ovk[-1])
+    chank_info = []
+    position_info = []
+    changes = []
+    for item in number:
+        if item not in changes:
+            changes.append(item)
+    print(changes)
+    for i in range(2, pos_ovk[-1]):
+        if chank_info == []:
+            ovk_info = str(book[f'{stolb_ovk_info[0]}{i}'].value)
+            chank_info.append(ovk_info)
+            position_info.append(i)
+        else:
+            ovk_info = str(book[f'{stolb_ovk_info[0]}{i}'].value)
+            if ovk_info == chank_info[-1]:
+                pass
+            else:
+                chank_info.append(ovk_info)
+                position_info.append(i)
+    print(chank_info)
+    print(position_info)
+    for i, p in enumerate(chank_info):
+        start = position_info[i]
+        try:
+            end = position_info[i + 1]
+        except IndexError:
+            pass
+        if p in changes:
+            info_value = "Изменен"
+        else:
+            info_value = "Не изменен"
+        for v in range(start, end):
+            book[f'A{v}'] = f"{info_value}"
+        wb.save(path)
+        # try:
+        #     number.index(ovk_info)
+        #     book[f'A{i}'] = f"Изменен"
+        #     wb.save(path)
+        # except ValueError:
+        #     book[f'A{i}'] = f"Без изменен"
+        #     wb.save(path)
+    # for i in number:
+    #     try:
+    #         pos = number.index(i)
+    #         number_ovk.remove(i)
+    #         trues[f'A{t_p}'] = f"{i}"
+    #         trues[f'B{t_p}'] = f"{atrr[pos]}"
+    #         t_p += 1
+    #     except ValueError:
+    #         pass
+    # wb.save(path)
+    # for i in number_ovk:
+    #     falses[f'A{f_p}'] = f"{i}"
+    #     f_p += 1
+    # wb.save(path)
 def scan_file_docs(path,token):
     """Получение пути фаила с информацией 'ИНН'"""
     path = str(path)

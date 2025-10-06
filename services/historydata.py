@@ -6,8 +6,16 @@ def historyData(token,id):
 
   payload = json.dumps({
     "fields": {
-      "orderNumbers": [
-        f"{id}"
+      "orderNumbers": id
+      ,
+      "orderChangeAttributeNames": [
+        "SENDER_ADDRESS_CITY_CODE",
+        "SENDER_ADDRESS_STRING",
+        "RECEIVER_ADDRESS_CITY_CODE",
+        "RECEIVER_ADDRESS_STRING",
+        "RECEIVER_OFFICE_CODE",
+        "TARIFF_TYPE_CODE",
+        "SENDER_OFFICE_CODE"
       ]
     },
     "sort": [
@@ -38,8 +46,9 @@ def historyData(token,id):
   }
 
   response = requests.request("POST", url, headers=headers, data=payload)
-
+  num = []
+  atr = []
   for item in response.json()['items']:
-      if item['orderChangeAttributeName'] == 'Основная услуга (тариф)' : return True
-  return False
-
+      num.append(item['orderNumber'])
+      atr.append(item['orderChangeAttributeName'])
+  return num, atr

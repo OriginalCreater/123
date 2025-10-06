@@ -6,7 +6,7 @@ from services.getDynamic import getDinamic
 from services.getSecondaryFilterData import getOMP
 from modules.search_pusk import check_companies,one_inn_check
 from flask import Flask, jsonify, render_template, request, current_app, send_from_directory, redirect, url_for, make_response, send_file
-from services.scan_file import scan_file, scan_file_affel, duble_opti, scan_file_docs
+from services.scan_file import scan_file, scan_file_affel, duble_opti, scan_file_docs, ovk_skan
 import os
 import pandas as pd
 from localStoragePy import localStoragePy
@@ -39,9 +39,7 @@ def affel():
 @app.route('/docs')
 def docs():
     return render_template("docs.html")
-@app.route('/ovk')
-def ovk():
-    return render_template('ovk.html')
+
 @app.route('/menu')
 def menu():
     return render_template('cdek_menu.html')
@@ -57,18 +55,26 @@ def handle_login():
     response_data = refresh_token(username, password)
     # print(response_data)
     access_token = request.cookies.get('token')
-    if response_data["token"]:
-        info['token'] = response_data['token']
-        save_in_cookie(response_data["token"])
-        return redirect(url_for('menu'))
-    elif response_data["token"] != access_token or response_data["token"] == None:
-        info['username'] = username
-        info['password'] = password
-        return redirect(url_for('code_input'))
-    elif response_data["token"] == access_token:
-        info['token'] = response_data['token']
-        save_in_cookie(response_data["token"])
-        return redirect(url_for('menu'))
+    # if response_data["token"] != access_token:
+    #     info['username'] = username
+    #     info['password'] = password
+    #     return redirect(url_for('code_input'))
+    try:
+        if response_data["codeTtl"] == 300:
+            info['username'] = username
+            info['password'] = password
+            return redirect(url_for('code_input'))
+    except KeyError:
+        if response_data["token"]:
+            info['token'] = response_data['token']
+            save_in_cookie(response_data["token"])
+            return redirect(url_for('menu'))
+        elif response_data["token"] == access_token:
+            info['token'] = response_data['token']
+            save_in_cookie(response_data["token"])
+            return redirect(url_for('menu'))
+
+
 
 @app.route('/code_input')
 def code_input():
@@ -129,6 +135,7 @@ def upload():
 @app.route("/scan_html", methods=["GET",'POST'])
 def scan_html():
     return render_template("index_scan.html")
+
 @app.route('/scan', methods=['GET'])
 def scan():
     if request.method == "GET":
@@ -151,46 +158,10 @@ def uploaded():
         uploads = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
         return send_from_directory(uploads, filename)
 
-@app.route('/process', methods=['POST'])
-def process_route_deviation():
-        TOKEN = info["token"]
-        uploaded_files = request.files.getlist("file")
-        uploaded_file = uploaded_files[0]
-        filename = uploaded_file.filename
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        uploaded_file.save(file_path)
-        print(file_path)
-        # Читаем Excel-файл в DataFrame
-        df = pd.read_csv(str(file_path), sep=';')
 
-        # Шаг 1: Применяем custom_round для округления веса
-        df['Расчетный вес округленный'] = df.apply(custom_round, axis=1)
-        print("After custom_round:")
-        print(df.info())
 
-        # Шаг 2: Вычисляем result_df1 с помощью find_extra_steps
-        results = []
-        for order_id, group in df.groupby('№ заказа'):
-            extra_steps, total_sum, first_deviation_date, first_extra_from_city, last_extra_to_city, first_transport_type = find_extra_steps(group)
-            if extra_steps:
-                results.append({
-                    '№ заказа': order_id,
-                    'Лишние звенья': extra_steps,
-                    'Сумма операций (по условиям)': total_sum,
-                    'Дата первого отклонения': first_deviation_date,
-                    'Начальный город': first_extra_from_city,
-                    'Конечный город': last_extra_to_city,
-                    'Вид тр-та (факт)': first_transport_type
-                })
-        result_df1 = pd.DataFrame(results)
-        print("Result_df1:")
-        print(result_df1)
 
-        # Шаг 3: Выполняем route_deviation_calculator
-        route_deviation_calculator(TOKEN, df, result_df1)
 
-        # Возвращаем сгенерированный файл
-        return send_file('output_table.xlsx', as_attachment=True, download_name='output_table.xlsx')
 @app.route("/affel_search", methods = ["POST"])
 def affel_search():
     files = request.files.getlist("file")
@@ -277,6 +248,70 @@ def scan_docs():
         # return jsonify(list_inn)
         # return redirect("/uploaded_html")
         return(redirect("/uploaded_html"))
+
+
+"""Анализ транспортных схем"""
+@app.route('/ovk')
+def ovk():
+    return render_template('ovk.html')
+
+
+# @app.route("/ovk_html", methods=["GET",'POST'])
+# def ovk_html():
+#
+@app.route('/process', methods=["GET",'POST'])
+def process():
+    TOKEN = info["token"]
+    files = request.files.getlist("file")
+    uploaded_files = request.files.getlist("file")
+    uploaded_file = uploaded_files[0]
+    filename = uploaded_file.filename
+    name.append(filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    uploaded_file.save(file_path)
+    print(file_path)
+    return render_template("ovk_html.html")
+        # return redirect("/ovk_html.html")
+
+
+@app.route('/end_ovk', methods=["GET",'POST'])
+def end_ovk():
+        TOKEN = info["token"]
+        file_path = f"{UPLOAD_FOLDER}/{name[-1]}"
+        ovk = ovk_skan(file_path, TOKEN)
+        return redirect("/uploaded_html")
+
+        # # Читаем Excel-файл в DataFrame
+        # df = pd.read_csv(str(file_path), sep=';')
+        #
+        # # Шаг 1: Применяем custom_round для округления веса
+        # df['Расчетный вес округленный'] = df.apply(custom_round, axis=1)
+        # print("After custom_round:")
+        # print(df.info())
+        #
+        # # Шаг 2: Вычисляем result_df1 с помощью find_extra_steps
+        # results = []
+        # for order_id, group in df.groupby('№ заказа'):
+        #     extra_steps, total_sum, first_deviation_date, first_extra_from_city, last_extra_to_city, first_transport_type = find_extra_steps(group)
+        #     if extra_steps:
+        #         results.append({
+        #             '№ заказа': order_id,
+        #             'Лишние звенья': extra_steps,
+        #             'Сумма операций (по условиям)': total_sum,
+        #             'Дата первого отклонения': first_deviation_date,
+        #             'Начальный город': first_extra_from_city,
+        #             'Конечный город': last_extra_to_city,
+        #             'Вид тр-та (факт)': first_transport_type
+        #         })
+        # result_df1 = pd.DataFrame(results)
+        # print("Result_df1:")
+        # print(result_df1)
+        #
+        # # Шаг 3: Выполняем route_deviation_calculator
+        # route_deviation_calculator(TOKEN, df, result_df1)
+        #
+        # # Возвращаем сгенерированный файл
+        # return send_file('output_table.xlsx', as_attachment=True, download_name='output_table.xlsx')
 if __name__ == '__main__':
     print("ok")
     app.run(debug=True, host="0.0.0.0", port=5000)
